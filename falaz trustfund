@@ -1,0 +1,44 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract TrustFund {
+
+  address public child;
+  address public father;
+  uint public amount;
+  uint public birthday;
+
+  constructor(address _child, address _father, uint _amount, uint _birthday) {
+    child = _child;
+    father = _father;
+    amount = _amount;
+    birthday = _birthday;
+  }
+
+  function withdraw() public {
+    require(msg.sender == child);
+    require(now >= birthday);
+
+    child.transfer(amount);
+  }
+
+  function deposit() public {
+    require(msg.sender == father);
+
+    amount += msg.value;
+  }
+
+}
+
+// The father deposits 30 ETH into the trust fund.
+TrustFund trustFund = new TrustFund(0x7FDe2eB3D49e0397b523F70CBfe63d8726440bf7, 0xf8601843B06fb66d1EF2e25059Ad492912460047, 30 ether, now);
+
+// The child tries to withdraw funds before they reach the age of 18.
+trustFund.withdraw(); // This will revert.
+
+// The child reaches the age of 18.
+now = trustFund.birthday + 18 years;
+
+// The child withdraws the funds from the trust fund.
+trustFund.withdraw();
